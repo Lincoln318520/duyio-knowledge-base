@@ -1,0 +1,2161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>朵颐芙 · 外贸销售知识库</title>
+<script>
+(function(){
+  const PASS = 'DUYIO';
+  const KEY = 'duyio_auth';
+  if(sessionStorage.getItem(KEY) !== '1'){
+    document.addEventListener('DOMContentLoaded', function(){
+      document.body.style.display = 'none';
+      var overlay = document.createElement('div');
+      overlay.id = 'auth-overlay';
+      overlay.style.cssText = 'position:fixed;inset:0;background:#1a0010;display:flex;align-items:center;justify-content:center;z-index:99999;';
+      overlay.innerHTML = `
+        <div style="text-align:center;padding:48px 40px;background:rgba(255,255,255,0.05);border:1px solid rgba(204,0,102,0.3);border-radius:16px;width:320px;">
+          <div style="width:52px;height:52px;background:#CC0066;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:serif;font-size:22px;font-weight:700;color:white;margin:0 auto 20px;">朵</div>
+          <div style="font-family:serif;font-size:20px;font-weight:700;color:white;margin-bottom:6px;">朵颐芙知识库</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:28px;letter-spacing:1px;">请输入访问密码</div>
+          <input id="auth-input" type="password" placeholder="输入密码" style="width:100%;padding:12px 16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:white;font-size:15px;outline:none;text-align:center;letter-spacing:3px;font-family:monospace;margin-bottom:12px;" />
+          <div id="auth-err" style="color:#ff6688;font-size:12px;height:18px;margin-bottom:8px;"></div>
+          <button id="auth-btn" style="width:100%;padding:12px;background:#CC0066;color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:1px;">进入知识库</button>
+        </div>
+      `;
+      document.body.parentNode.insertBefore(overlay, document.body);
+      document.body.parentNode.style.background = '#1a0010';
+
+      function tryLogin(){
+        var val = document.getElementById('auth-input').value.trim().toUpperCase();
+        if(val === PASS){
+          sessionStorage.setItem(KEY, '1');
+          overlay.remove();
+          document.body.style.display = '';
+        } else {
+          document.getElementById('auth-err').textContent = '密码错误，请重试';
+          document.getElementById('auth-input').value = '';
+          document.getElementById('auth-input').focus();
+        }
+      }
+
+      document.getElementById('auth-btn').onclick = tryLogin;
+      document.getElementById('auth-input').addEventListener('keydown', function(e){
+        if(e.key === 'Enter') tryLogin();
+        document.getElementById('auth-err').textContent = '';
+      });
+      setTimeout(function(){ document.getElementById('auth-input').focus(); }, 100);
+    });
+  }
+})();
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #CC0066;
+  --primary-dark: #990050;
+  --primary-light: #ff3388;
+  --primary-pale: rgba(204,0,102,0.08);
+  --primary-border: rgba(204,0,102,0.2);
+  --bg: #fafafa;
+  --sidebar-bg: #1a0010;
+  --sidebar-hover: rgba(204,0,102,0.15);
+  --sidebar-active: rgba(204,0,102,0.25);
+  --text: #1a1a2e;
+  --text-muted: #6b7280;
+  --text-light: #9ca3af;
+  --white: #ffffff;
+  --border: #e5e7eb;
+  --card-bg: #ffffff;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+  --sidebar-width: 280px;
+  --header-height: 60px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-weight: 400;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.8;
+  overflow-x: hidden;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--primary-border); border-radius: 4px; }
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--sidebar-bg);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.logo-icon {
+  width: 36px; height: 36px;
+  background: var(--primary);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.95);
+  line-height: 1.3;
+}
+
+.logo-sub {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  font-weight: 300;
+  letter-spacing: 1px;
+}
+
+.search-box {
+  position: relative;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 9px 12px 9px 34px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: rgba(255,255,255,0.85);
+  font-size: 13px;
+  font-family: 'Noto Sans SC', sans-serif;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.search-box input::placeholder { color: rgba(255,255,255,0.3); }
+.search-box input:focus {
+  border-color: var(--primary);
+  background: rgba(204,0,102,0.1);
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px; top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,0.35);
+  font-size: 13px;
+  pointer-events: none;
+}
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 0 20px;
+}
+
+.nav-section {
+  margin-bottom: 4px;
+}
+
+.nav-section-title {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  padding: 12px 20px 6px;
+  font-weight: 500;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 20px;
+  cursor: pointer;
+  transition: all 0.18s;
+  border-left: 2px solid transparent;
+  color: rgba(255,255,255,0.6);
+  font-size: 13px;
+  font-weight: 400;
+  user-select: none;
+}
+
+.nav-item:hover {
+  background: var(--sidebar-hover);
+  color: rgba(255,255,255,0.9);
+  border-left-color: var(--primary);
+}
+
+.nav-item.active {
+  background: var(--sidebar-active);
+  color: white;
+  border-left-color: var(--primary);
+  font-weight: 500;
+}
+
+.nav-item .nav-icon {
+  width: 18px;
+  font-size: 14px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.nav-item .nav-badge {
+  margin-left: auto;
+  background: rgba(204,0,102,0.3);
+  color: var(--primary-light);
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+/* ===== MAIN ===== */
+.main {
+  margin-left: var(--sidebar-width);
+  min-height: 100vh;
+}
+
+.topbar {
+  height: var(--header-height);
+  background: white;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  gap: 16px;
+}
+
+.topbar-breadcrumb {
+  font-size: 13px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.topbar-breadcrumb span { color: var(--text); font-weight: 500; }
+
+.topbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.badge-company {
+  background: var(--primary-pale);
+  color: var(--primary);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+  border: 1px solid var(--primary-border);
+}
+
+/* ===== CONTENT ===== */
+.content {
+  padding: 40px;
+  max-width: 900px;
+}
+
+/* ===== PAGE SECTIONS ===== */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ===== HOME PAGE ===== */
+.home-hero {
+  background: linear-gradient(135deg, var(--sidebar-bg) 0%, #2d0020 100%);
+  border-radius: 16px;
+  padding: 48px 48px 40px;
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+.home-hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 240px; height: 240px;
+  background: radial-gradient(circle, rgba(204,0,102,0.3) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.home-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; left: 40%;
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, rgba(204,0,102,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(204,0,102,0.2);
+  border: 1px solid rgba(204,0,102,0.4);
+  color: #ff6699;
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+
+.hero-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: white;
+  line-height: 1.3;
+  margin-bottom: 12px;
+}
+
+.hero-title em {
+  color: var(--primary-light);
+  font-style: normal;
+}
+
+.hero-desc {
+  font-size: 15px;
+  color: rgba(255,255,255,0.6);
+  max-width: 480px;
+  line-height: 1.7;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 32px;
+  margin-top: 32px;
+  padding-top: 28px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.hero-stat-num {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary-light);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.hero-stat-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.5px;
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.module-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.module-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--primary);
+  transform: scaleX(0);
+  transition: transform 0.2s;
+}
+
+.module-card:hover {
+  border-color: var(--primary-border);
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+
+.module-card:hover::before { transform: scaleX(1); }
+
+.module-icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.module-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.module-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.module-count {
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+/* ===== ARTICLE PAGE ===== */
+.article-header {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.article-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary-pale);
+  color: var(--primary);
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+  font-weight: 500;
+  border: 1px solid var(--primary-border);
+}
+
+.article-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
+.article-meta {
+  font-size: 13px;
+  color: var(--text-light);
+}
+
+/* ===== CONTENT BLOCKS ===== */
+.content-section {
+  margin-bottom: 36px;
+}
+
+.content-section h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+  padding-left: 14px;
+  border-left: 3px solid var(--primary);
+  line-height: 1.4;
+}
+
+.content-section h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 20px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.content-section h3::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--primary);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.content-section p {
+  font-size: 14px;
+  color: #374151;
+  margin-bottom: 12px;
+  line-height: 1.85;
+}
+
+.tip-box {
+  background: var(--primary-pale);
+  border-left: 3px solid var(--primary);
+  border-radius: 0 8px 8px 0;
+  padding: 16px 20px;
+  margin: 16px 0;
+}
+
+.tip-box p {
+  font-size: 14px;
+  color: var(--text);
+  margin: 0;
+}
+
+.tip-box strong {
+  color: var(--primary-dark);
+}
+
+.warning-box {
+  background: #fff8e1;
+  border-left: 3px solid #f59e0b;
+  border-radius: 0 8px 8px 0;
+  padding: 16px 20px;
+  margin: 16px 0;
+}
+
+.warning-box p { margin: 0; font-size: 14px; color: #92400e; }
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.info-item {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.info-item-title {
+  font-size: 12px;
+  color: var(--primary);
+  font-weight: 700;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.info-item-body {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.step-list {
+  list-style: none;
+  margin: 16px 0;
+}
+
+.step-list li {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+
+.step-num {
+  width: 26px; height: 26px;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.step-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.check-list {
+  list-style: none;
+  margin: 12px 0;
+}
+
+.check-list li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 7px 0;
+  font-size: 14px;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.check-list li:last-child { border-bottom: none; }
+
+.check-list li::before {
+  content: '✦';
+  color: var(--primary);
+  font-size: 10px;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.quote-block {
+  background: linear-gradient(135deg, var(--sidebar-bg), #2d0020);
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin: 20px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.quote-block::before {
+  content: '"';
+  position: absolute;
+  top: -10px; left: 16px;
+  font-size: 80px;
+  color: rgba(204,0,102,0.3);
+  font-family: Georgia, serif;
+  line-height: 1;
+}
+
+.quote-block p {
+  font-size: 15px;
+  color: rgba(255,255,255,0.9);
+  font-style: italic;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+  line-height: 1.7;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.col-box {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.col-box-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--primary-border);
+}
+
+.col-box ul {
+  list-style: none;
+}
+
+.col-box ul li {
+  font-size: 13px;
+  color: #374151;
+  padding: 4px 0;
+  padding-left: 14px;
+  position: relative;
+  line-height: 1.6;
+}
+
+.col-box ul li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-size: 11px;
+}
+
+/* scripts/tactics cards */
+.tactics-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.tactic-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  transition: border-color 0.2s;
+}
+
+.tactic-card:hover { border-color: var(--primary-border); }
+
+.tactic-label {
+  background: var(--primary);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.tactic-text {
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.7;
+}
+
+/* table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 13px;
+}
+
+.data-table th {
+  background: var(--primary);
+  color: white;
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.data-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: #374151;
+  line-height: 1.6;
+}
+
+.data-table tr:nth-child(even) td { background: #fafafa; }
+.data-table tr:hover td { background: var(--primary-pale); }
+
+/* 5 laws */
+.law-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.law-card {
+  background: linear-gradient(135deg, var(--sidebar-bg), #3d0028);
+  border-radius: 10px;
+  padding: 20px 16px;
+  text-align: center;
+}
+
+.law-card-icon { font-size: 24px; margin-bottom: 8px; }
+.law-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.law-card-desc {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.5;
+}
+
+/* search highlight */
+.highlight { background: rgba(204,0,102,0.2); border-radius: 2px; }
+
+/* search results */
+.search-results {
+  display: none;
+  padding: 8px 0;
+}
+
+.search-result-item {
+  padding: 8px 20px;
+  cursor: pointer;
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+}
+
+.search-result-item:hover {
+  background: var(--sidebar-hover);
+  color: white;
+  border-left-color: var(--primary);
+}
+
+.search-result-item .result-title { font-weight: 500; color: rgba(255,255,255,0.9); }
+.search-result-item .result-section { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 1px; }
+
+/* progress indicator */
+.progress-bar {
+  height: 2px;
+  background: var(--primary);
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-width);
+  z-index: 200;
+  transition: width 0.1s;
+}
+
+/* responsive */
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+  .sidebar.open { transform: none; }
+  .main { margin-left: 0; }
+  .content { padding: 24px 20px; }
+  .two-col { grid-template-columns: 1fr; }
+  .hero-stats { gap: 20px; flex-wrap: wrap; }
+  .hero-title { font-size: 26px; }
+}
+
+/* animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+.page.active .content-section {
+  animation: fadeIn 0.4s ease both;
+}
+
+.page.active .content-section:nth-child(2) { animation-delay: 0.05s; }
+.page.active .content-section:nth-child(3) { animation-delay: 0.1s; }
+.page.active .content-section:nth-child(4) { animation-delay: 0.15s; }
+.page.active .content-section:nth-child(5) { animation-delay: 0.2s; }
+
+.mobile-toggle {
+  display: none;
+  position: fixed;
+  bottom: 20px; right: 20px;
+  width: 48px; height: 48px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 200;
+  box-shadow: var(--shadow-lg);
+}
+
+@media (max-width: 768px) { .mobile-toggle { display: flex; align-items: center; justify-content: center; } }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="logo-icon">朵</div>
+      <div>
+        <div class="logo-text">朵颐芙外贸知识库</div>
+        <div class="logo-sub">DUOYINFO · SALES GUIDE</div>
+      </div>
+    </div>
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="搜索内容..." id="searchInput" oninput="handleSearch(this.value)" />
+    </div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+
+  <nav class="sidebar-nav" id="sidebarNav">
+    <div class="nav-section">
+      <div class="nav-section-title">总览</div>
+      <div class="nav-item active" onclick="showPage('home', this)">
+        <span class="nav-icon">🏠</span> 知识库首页
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">产品与客户</div>
+      <div class="nav-item" onclick="showPage('product', this)">
+        <span class="nav-icon">📦</span> 掌握产品知识
+      </div>
+      <div class="nav-item" onclick="showPage('prospect', this)">
+        <span class="nav-icon">🎯</span> 客户开发理念
+        <span class="nav-badge">核心</span>
+      </div>
+      <div class="nav-item" onclick="showPage('pipeline', this)">
+        <span class="nav-icon">📊</span> 销售漏斗管理
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">沟通与跟进</div>
+      <div class="nav-item" onclick="showPage('email', this)">
+        <span class="nav-icon">✉️</span> 开发信写作
+        <span class="nav-badge">实战</span>
+      </div>
+      <div class="nav-item" onclick="showPage('followup', this)">
+        <span class="nav-icon">🔄</span> 客户跟进策略
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">谈判与成交</div>
+      <div class="nav-item" onclick="showPage('negotiate', this)">
+        <span class="nav-icon">💬</span> 谈判与议价
+      </div>
+      <div class="nav-item" onclick="showPage('close', this)">
+        <span class="nav-icon">🏆</span> 征服异议与成交
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">订单与物流</div>
+      <div class="nav-item" onclick="showPage('order', this)">
+        <span class="nav-icon">📋</span> 生产备货管理
+      </div>
+      <div class="nav-item" onclick="showPage('logistics', this)">
+        <span class="nav-icon">🚢</span> 物流与清关
+      </div>
+      <div class="nav-item" onclick="showPage('aftersale', this)">
+        <span class="nav-icon">⭐</span> 售后与复购
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">职业成长</div>
+      <div class="nav-item" onclick="showPage('professional', this)">
+        <span class="nav-icon">🌟</span> 职业素养与效率
+      </div>
+      <div class="nav-item" onclick="showPage('mindset', this)">
+        <span class="nav-icon">💎</span> 顶级销售信念
+      </div>
+    </div>
+  </nav>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-breadcrumb">
+      外贸知识库 › <span id="currentPageTitle">首页</span>
+    </div>
+    <div class="topbar-right">
+      <span class="badge-company">朵颐芙科技 · 内部资料</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ===== HOME ===== -->
+    <div class="page active" id="page-home">
+      <div class="home-hero">
+        <div class="hero-tag">📚 内部学习资料 · 保密</div>
+        <div class="hero-title">外贸<em>销售</em>知识库</div>
+        <p class="hero-desc">涵盖从产品知识到成交技巧的完整外贸销售体系，帮助每一位业务员快速成长为专业顾问式销售。</p>
+        <div class="hero-stats">
+          <div>
+            <div class="hero-stat-num">14</div>
+            <div class="hero-stat-label">核心模块</div>
+          </div>
+          <div>
+            <div class="hero-stat-num">100+</div>
+            <div class="hero-stat-label">实战技巧</div>
+          </div>
+          <div>
+            <div class="hero-stat-num">5</div>
+            <div class="hero-stat-label">成交定律</div>
+          </div>
+          <div>
+            <div class="hero-stat-num">7</div>
+            <div class="hero-stat-label">成功秘诀</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">全部模块</div>
+      <div class="module-grid">
+        <div class="module-card" onclick="showPage('product', document.querySelector('[onclick*=product]'))">
+          <span class="module-icon">📦</span>
+          <div class="module-title">掌握产品知识</div>
+          <div class="module-desc">成为产品专家，快速回答客户问题，掌握卖点提炼方法</div>
+          <div class="module-count">→ 产品知识 · 卖点话术</div>
+        </div>
+        <div class="module-card" onclick="showPage('prospect', document.querySelector('[onclick*=prospect]'))">
+          <span class="module-icon">🎯</span>
+          <div class="module-title">客户开发理念</div>
+          <div class="module-desc">信息制胜、专注清晰、聊天技巧、开发大客户全攻略</div>
+          <div class="module-count">→ 核心模块 · 必读</div>
+        </div>
+        <div class="module-card" onclick="showPage('pipeline', document.querySelector('[onclick*=pipeline]'))">
+          <span class="module-icon">📊</span>
+          <div class="module-title">销售漏斗管理</div>
+          <div class="module-desc">建立客户储备，追踪每个阶段，科学管理成交概率</div>
+          <div class="module-count">→ 客户管理 · 数据思维</div>
+        </div>
+        <div class="module-card" onclick="showPage('email', document.querySelector('[onclick*=email]'))">
+          <span class="module-icon">✉️</span>
+          <div class="module-title">开发信写作</div>
+          <div class="module-desc">四层开发信思路、标题技巧、14种高级结尾写法</div>
+          <div class="module-count">→ 实战模板 · 提升回复率</div>
+        </div>
+        <div class="module-card" onclick="showPage('followup', document.querySelector('[onclick*=followup]'))">
+          <span class="module-icon">🔄</span>
+          <div class="module-title">客户跟进策略</div>
+          <div class="module-desc">11种跟进思路，多渠道立体式作战，让跟进有价值</div>
+          <div class="module-count">→ 跟进技巧 · 节奏把控</div>
+        </div>
+        <div class="module-card" onclick="showPage('negotiate', document.querySelector('[onclick*=negotiate]'))">
+          <span class="module-icon">💬</span>
+          <div class="module-title">谈判与议价</div>
+          <div class="module-desc">价格谈判技巧、破解压价策略、影响客户行为</div>
+          <div class="module-count">→ 谈判心理学</div>
+        </div>
+        <div class="module-card" onclick="showPage('close', document.querySelector('[onclick*=close]'))">
+          <span class="module-icon">🏆</span>
+          <div class="module-title">征服异议与成交</div>
+          <div class="module-desc">6种成交话术，制造紧迫性，处理客户拒绝</div>
+          <div class="module-count">→ 成交技巧 · 实战话术</div>
+        </div>
+        <div class="module-card" onclick="showPage('order', document.querySelector('[onclick*=order]'))">
+          <span class="module-icon">📋</span>
+          <div class="module-title">生产备货管理</div>
+          <div class="module-desc">下单细节、质检流程、出货前准备、付款节点</div>
+          <div class="module-count">→ 操作规范</div>
+        </div>
+        <div class="module-card" onclick="showPage('mindset', document.querySelector('[onclick*=mindset]'))">
+          <span class="module-icon">💎</span>
+          <div class="module-title">顶级销售信念</div>
+          <div class="module-desc">7大成功秘诀，塑造顶级销售的心态与信念体系</div>
+          <div class="module-count">→ 心态修炼</div>
+        </div>
+      </div>
+
+      <div class="quote-block">
+        <p>顶级销售员不是天生的——他们是通过不断的学习、实践和反思锻造出来的。每一次客户拒绝，都是雕刻你成为更强大销售员的机会。</p>
+      </div>
+    </div>
+
+    <!-- ===== PRODUCT ===== -->
+    <div class="page" id="page-product">
+      <div class="article-header">
+        <div class="article-tag">📦 模块一</div>
+        <div class="article-title">掌握产品知识</div>
+        <div class="article-meta">成为产品专家，是做好外贸销售的第一步</div>
+      </div>
+
+      <div class="content-section">
+        <h2>核心原则：懂行且快速</h2>
+        <p>客户询问产品相关问题时，必须能够<strong>即时给出准确答案</strong>，不能说"我查一下回复你"——这会严重损害客户对你专业度的信任。推荐产品时要有产品矩阵意识，根据客户需求合理推荐，而非一次性发送所有型号。</p>
+        <div class="tip-box">
+          <p><strong>关键心态：</strong>我们不能只做普通贸易商，必须成为产品领域的专家，这是区别于竞争对手最核心的壁垒之一。</p>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>产品知识学习清单</h2>
+        <p>对主营产品，需要系统掌握以下维度的知识：</p>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-item-title">材料知识</div>
+            <div class="info-item-body">构成、名称、成本变动规律</div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-title">生产工艺</div>
+            <div class="info-item-body">生产流程、工艺特点、质量管控</div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-title">使用场景</div>
+            <div class="info-item-body">功能、用途、适用领域</div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-title">贸易参数</div>
+            <div class="info-item-body">HS编码、退税率、重量体积装柜量</div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-title">认证要求</div>
+            <div class="info-item-body">目标市场认证标准、空海运要求</div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-title">市场情报</div>
+            <div class="info-item-body">竞争对手价格、产业集中地、产品生命周期</div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-title">竞品分析</div>
+            <div class="info-item-body">可替代品、影响价格因素、降本方式</div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-title">常见问题</div>
+            <div class="info-item-body">产品常见故障、客户投诉类型、解决方案</div>
+          </div>
+        </div>
+        <div class="tip-box">
+          <p><strong>市场研究：</strong>研究目标市场至少10个以上的品牌商，了解其营销渠道；收集该产品行业展会的参展商名单进行分析；下载竞品CATALOG，积累产品规格信息。</p>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>卖点提炼：以手机壳为例</h2>
+        <p>除了"质量好"，优秀的销售员能从多个维度提炼产品卖点：</p>
+        <div class="check-list">
+          <li><strong>材料安全性</strong>——无毒、无异味、不掉漆掉色、不变形、贴合度好</li>
+          <li><strong>外观设计</strong>——轻薄/厚重感、工艺精致、造型时尚、特色纹理</li>
+          <li><strong>防护性能</strong>——超越MIL-STD-810G军工级标准、防摔防震防尘防水</li>
+          <li><strong>结构工学</strong>——符合人体工程学、弹性按键、镜头高出壳边缘保护</li>
+          <li><strong>使用体验</strong>——手感质感、防油防指纹、支持无线充电</li>
+          <li><strong>社会效益</strong>——抗菌、无有害气体、环保材料</li>
+          <li><strong>检测认证</strong>——CE、RoHS、REACH等欧盟认证，高低温/跌落/磨损等测试</li>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PROSPECT ===== -->
+    <div class="page" id="page-prospect">
+      <div class="article-header">
+        <div class="article-tag">🎯 模块二</div>
+        <div class="article-title">客户开发理念</div>
+        <div class="article-meta">信息制胜 · 精准聚焦 · 建立关系</div>
+      </div>
+
+      <div class="content-section">
+        <h2>第一步：信息制胜</h2>
+        <p>新手第一次联系客户就急于谈产品，而高手会先深入了解客户背景，诊断客户业务，找出真实需求，再为客户提供定制化方案。</p>
+        <h3>联系客户前必须了解</h3>
+        <div class="check-list">
+          <li>客户姓名、公司名称、电话、邮箱</li>
+          <li>官网及社交媒体主页</li>
+          <li>商业模式：客户如何盈利</li>
+          <li>产品结构：主营什么，质量水平如何</li>
+          <li>销售价格：产品是高端还是大众定位</li>
+          <li>商业类型：批发分销 or 零售（实体/电商）</li>
+          <li>客户的客户是谁：消费者、经销商还是服务商</li>
+          <li>利用 archive.org 了解客户历史和发展轨迹</li>
+        </div>
+        <div class="tip-box">
+          <p><strong>话术参考：</strong>"我已经阅读了贵公司网站上关于业务的所有内容，有了基本了解。但我希望您能告诉我更多关于贵司业务的情况——这样我才能为您提供真正有价值的方案。"</p>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>第二步：专注与清晰</h2>
+        <p>明确你的理想客户画像：他们是那些在短时间内最可能购买你产品的人。</p>
+        <ul class="step-list">
+          <li>
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <div class="step-title">具体化</div>
+              <div class="step-desc">我的产品解决什么问题？谁是正在经历这个问题、最迫切需要解决的客户？</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <div class="step-title">差异化</div>
+              <div class="step-desc">我们独特的销售主张是什么？即便是同质化产品，也要挖掘竞争对手尚未强调的价值点。</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <div class="step-title">细分化</div>
+              <div class="step-desc">哪类客户能从我们产品中获益最大？精确到行业、规模、地区。</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">4</div>
+            <div class="step-content">
+              <div class="step-title">聚焦化</div>
+              <div class="step-desc">将80%的精力集中在最有可能最快成交的优质潜在客户身上。</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>聊天技巧：建立真实连接</h2>
+        <div class="two-col">
+          <div class="col-box">
+            <div class="col-box-title">✅ 应该这样做</div>
+            <ul>
+              <li>先了解客户背景再谈产品</li>
+              <li>用互动方式交换信息价值</li>
+              <li>主动把握对话主动权</li>
+              <li>根据对象灵活调整话术</li>
+              <li>多用"根据我多年经验……"</li>
+              <li>直接用社交聊天工具和电话沟通</li>
+            </ul>
+          </div>
+          <div class="col-box">
+            <div class="col-box-title">❌ 避免这样做</div>
+            <ul>
+              <li>第一次联系就发产品目录</li>
+              <li>短时间内连续发送骚扰信息</li>
+              <li>等着客户问问题被动回应</li>
+              <li>对所有客户说同样的话</li>
+              <li>只关注产品本身，忽略客户需求</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>万能话术公式（面对拒绝时）</h3>
+        <div class="tactics-grid">
+          <div class="tactic-card">
+            <div class="tactic-label">客户说：不感兴趣</div>
+            <div class="tactic-text">是的，大多数和您处境相似的客户，初次沟通时也这样说——但他们现在已成为我们最忠实的客户，还把我们推荐给了身边的朋友。</div>
+          </div>
+          <div class="tactic-card">
+            <div class="tactic-label">客户说：买不起</div>
+            <div class="tactic-text">我完全理解。很多客户在初次接触时也有同样的顾虑——但当他们看清楚我们产品能带来的具体收益后，发现这是非常值得的投入。</div>
+          </div>
+          <div class="tactic-card">
+            <div class="tactic-label">客户说：有固定供应商</div>
+            <div class="tactic-text">完全没问题。我们不是要取代您现有的供应商，而是希望成为您的备选方案——多一个选择，在关键时刻总会有用。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>开发大客户：系统化推进</h2>
+        <ul class="step-list">
+          <li><div class="step-num">1</div><div class="step-content"><div class="step-title">精准定位目标客户</div><div class="step-desc">基于信息研究，锁定符合理想客户画像的高价值目标</div></div></li>
+          <li><div class="step-num">2</div><div class="step-content"><div class="step-title">找到关键决策人</div><div class="step-desc">直接触达有采购决定权的人，避免在无权决策者身上浪费时间</div></div></li>
+          <li><div class="step-num">3</div><div class="step-content"><div class="step-title">建立初步沟通联系</div><div class="step-desc">通过多渠道（邮件、LinkedIn、WhatsApp等）建立联系</div></div></li>
+          <li><div class="step-num">4</div><div class="step-content"><div class="step-title">展示专业度与差异化</div><div class="step-desc">通过深度了解客户业务、提供专业见解来建立信任</div></div></li>
+          <li><div class="step-num">5</div><div class="step-content"><div class="step-title">了解供应商选择标准</div><div class="step-desc">深入了解客户对供应商的核心要求，针对性展示优势</div></div></li>
+          <li><div class="step-num">6</div><div class="step-content"><div class="step-title">争取线下会面机会</div><div class="step-desc">先聊市场行情，再谈产品，争取面谈——面谈是成交的最高效路径</div></div></li>
+        </ul>
+        <div class="warning-box">
+          <p>⚠️ <strong>重要提醒：</strong>手上已有一批成交客户后，要主动寻找更优质的目标客户。宁缺毋滥，集中精力开发高价值客户。</p>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>贸易公司的核心优势</h2>
+        <p>对于担心我们是贸易公司而非工厂的客户，可以大方说明我们的综合优势：</p>
+        <div class="check-list">
+          <li>批量采购，工厂给予VIP级别支持，价格和交期均有保障</li>
+          <li>整合数十家供应商，供应链灵活可靠</li>
+          <li>丰富的行业和市场经验，比客户自行寻厂更有效率</li>
+          <li>对产品专业，能提供完整的产品顾问服务</li>
+          <li>灵活的付款方式支持，降低客户资金压力</li>
+          <li>自主品牌DUYIO，综合服务能力强</li>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PIPELINE ===== -->
+    <div class="page" id="page-pipeline">
+      <div class="article-header">
+        <div class="article-tag">📊 模块三</div>
+        <div class="article-title">销售漏斗管理</div>
+        <div class="article-meta">用数据思维管理客户，科学提升成交率</div>
+      </div>
+
+      <div class="content-section">
+        <h2>销售漏斗的核心逻辑</h2>
+        <p>不要期望第一次联系就能拿下大单。销售本质上是一个<strong>概率游戏</strong>——客户储备数量足够大，只要持续努力，按概率计算，一定会成功。</p>
+        <div class="tip-box">
+          <p><strong>关键认知：</strong>你所开发的每一个客户，其实都在间接为你"付费"——只是最终那一个付款了，你才收到钱。前面所有的努力都是铺垫，不要认为没成交的拜访是"浪费时间"。</p>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>成交的五大障碍（定律）</h2>
+        <p>任何订单无法成交，必然是触犯了以下至少一条定律：</p>
+        <div class="law-cards">
+          <div class="law-card">
+            <div class="law-card-icon">🤝</div>
+            <div class="law-card-title">没有信任</div>
+            <div class="law-card-desc">信任是一切销售的基础</div>
+          </div>
+          <div class="law-card">
+            <div class="law-card-icon">🔑</div>
+            <div class="law-card-title">没有决策权</div>
+            <div class="law-card-desc">确保你在和真正的决策者谈</div>
+          </div>
+          <div class="law-card">
+            <div class="law-card-icon">💰</div>
+            <div class="law-card-title">没有资金</div>
+            <div class="law-card-desc">客户有意愿但预算不足</div>
+          </div>
+          <div class="law-card">
+            <div class="law-card-icon">🎯</div>
+            <div class="law-card-title">没有需求</div>
+            <div class="law-card-desc">产品与客户需求不匹配</div>
+          </div>
+          <div class="law-card">
+            <div class="law-card-icon">⚡</div>
+            <div class="law-card-title">没有紧迫感</div>
+            <div class="law-card-desc">客户有需求但不急于行动</div>
+          </div>
+        </div>
+        <p>在推进每一笔订单时，先自我诊断：这五个障碍中，哪一个是当前阻碍成交的关键？然后针对性突破。</p>
+      </div>
+
+      <div class="content-section">
+        <h2>漏斗管理的三个维度</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-item-title">📈 频率</div>
+            <div class="info-item-body">联系的次数要足够——每次跟进后如果3封邮件无回复，必须打电话。</div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-title">💬 深度</div>
+            <div class="info-item-body">每次沟通要有实质内容，深度推进关系，而非仅仅"打个招呼"。</div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-title">👥 数量</div>
+            <div class="info-item-body">保持足够的潜在客户储备量，持续开发新客户，装满漏斗。</div>
+          </div>
+        </div>
+
+        <h3>关键数据，每天掌握</h3>
+        <div class="check-list">
+          <li>今天联系了多少客户？</li>
+          <li>有多少客户有回复？回复率是多少？</li>
+          <li>有多少客户表现出合作意向？</li>
+          <li>从初次接触到成交，平均需要多少个月？</li>
+          <li>每个月需要开发多少新客户，才能达成销售目标？</li>
+        </div>
+        <div class="tip-box">
+          <p><strong>每日复盘：</strong>每天晚上睡前花10分钟复盘当天工作——今天做了什么？有什么可以改进的？明天的优先任务是什么？</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== EMAIL ===== -->
+    <div class="page" id="page-email">
+      <div class="article-header">
+        <div class="article-tag">✉️ 模块四</div>
+        <div class="article-title">开发信写作</div>
+        <div class="article-meta">四层思路 · 提升回复率 · 专业表达</div>
+      </div>
+
+      <div class="content-section">
+        <h2>写开发信前的三个注意</h2>
+        <div class="check-list">
+          <li><strong>贴近客户业务</strong>——内容要与客户在做的产品和服务高度相关，多用客户网站上的关键词</li>
+          <li><strong>广义开发信</strong>——不只是邮件，任何第一次联系客户的方式都算"开发信"</li>
+          <li><strong>3封无回复就打电话</strong>——连续3封邮件无效，必须主动拨打电话跟进</li>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>四层开发信思路</h2>
+
+        <h3>第一层：直接切入</h3>
+        <div class="tactics-grid">
+          <div class="tactic-card">
+            <div class="tactic-label">方式一</div>
+            <div class="tactic-text">简单自我介绍 → 表达对客户业务的了解 → 直接询问是否有报价需求</div>
+          </div>
+          <div class="tactic-card">
+            <div class="tactic-label">方式二</div>
+            <div class="tactic-text">简单自我介绍 → 了解客户 → 询问采购痛点 → 强调"我们不是要取代现有供应商，而是多提供一个选择"</div>
+          </div>
+          <div class="tactic-card">
+            <div class="tactic-label">方式三</div>
+            <div class="tactic-text">简单自我介绍 → 了解客户 → 告知热销独家产品 → 制造稀缺感（库存有限）</div>
+          </div>
+        </div>
+
+        <h3>第二层：价值输出</h3>
+        <div class="tactics-grid">
+          <div class="tactic-card">
+            <div class="tactic-label">数据驱动</div>
+            <div class="tactic-text">发送行业调查报告或产品数据，先提供价值，再建立对话</div>
+          </div>
+          <div class="tactic-card">
+            <div class="tactic-label">权威背书</div>
+            <div class="tactic-text">提供产品认证证明，或列举知名合作客户，强化信任感</div>
+          </div>
+          <div class="tactic-card">
+            <div class="tactic-label">价格冲击</div>
+            <div class="tactic-text">找到客户正在卖的产品，向工厂争取最优价格，用价格差异引发客户好奇心</div>
+          </div>
+        </div>
+
+        <h3>第三层：差异化互动</h3>
+        <div class="tactics-grid">
+          <div class="tactic-card">
+            <div class="tactic-label">竞品分析</div>
+            <div class="tactic-text">分析客户1-2个主要竞争对手的优势，以此作为话题切入，展示你的市场洞察力</div>
+          </div>
+          <div class="tactic-card">
+            <div class="tactic-label">邀请参与</div>
+            <div class="tactic-text">邀请客户参与产品评选或设计反馈，让客户感受到被重视和专业对待</div>
+          </div>
+          <div class="tactic-card">
+            <div class="tactic-label">免费赠样</div>
+            <div class="tactic-text">知恩图报式：提及客户品牌对我们的启发，主动提供免费样品以示感谢</div>
+          </div>
+        </div>
+
+        <h3>第四层：精准痛点</h3>
+        <div class="tactics-grid">
+          <div class="tactic-card">
+            <div class="tactic-label">痛点突破</div>
+            <div class="tactic-text">判断潜在客户的核心痛点 → 列出我们产品如何100%解决该痛点 → 用Top 3客户案例做见证</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>标题写作技巧</h2>
+        <div class="tactics-grid">
+          <div class="tactic-card">
+            <div class="tactic-label">借用客户话语</div>
+            <div class="tactic-text">从客户官网找到核心标语，直接用在邮件标题中。如客户官网写着 "Secure Your Daily Work"，标题可写：<em>Secure Your Daily Work, can we involve?</em></div>
+          </div>
+          <div class="tactic-card">
+            <div class="tactic-label">具体利益导向</div>
+            <div class="tactic-text"><em>Attn: ABC INC - New AirPods products get Revenue 20% up - Duoyinfo China</em></div>
+          </div>
+          <div class="tactic-card">
+            <div class="tactic-label">主打产品一目了然</div>
+            <div class="tactic-text"><em>Attn: Purchasing - Featured products / AirPods Case - Duoyinfo China</em></div>
+          </div>
+          <div class="tactic-card">
+            <div class="tactic-label">市场情报切入</div>
+            <div class="tactic-text"><em>Duoyinfo China: PU Leather Material Price Rise in July</em></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>邮件结尾的14种高级写法</h2>
+        <div class="data-table-wrapper" style="overflow-x:auto">
+        <table class="data-table">
+          <tr><th>场景</th><th>推荐结尾</th></tr>
+          <tr><td>需要客户回复</td><td>Appreciate your help in answering my question. If you are able to reply by Thursday, that would be great.</td></tr>
+          <tr><td>想约见面</td><td>Hoping for a hole in your calendar / Eager to work around your schedule</td></tr>
+          <tr><td>需要反馈或完成任务</td><td>Thanks in advance for your time. Let me know if there are any hold-ups.</td></tr>
+          <tr><td>关系熟悉时</td><td>Stay awesome. / Keep fighting the good fight.</td></tr>
+          <tr><td>项目推进中</td><td>Talk soon. / Looking forward to connecting soon.</td></tr>
+          <tr><td>提供有用内容后</td><td>Hope this helps.</td></tr>
+          <tr><td>客户为你做了事</td><td>Thanks again for [what they did]. You're the best.</td></tr>
+          <tr><td>周末/节日前</td><td>Have a great weekend! / Enjoy your holiday.</td></tr>
+          <tr><td>项目结束</td><td>Great working with you. Thank you for your hard work.</td></tr>
+          <tr><td>客户拒绝后礼貌退场</td><td>Thanks for your consideration. Appreciate your time.</td></tr>
+          <tr><td>发出提醒</td><td>Don't forget to [action]. Again, please [action].</td></tr>
+          <tr><td>赞美客户</td><td>Keep up the great work! / Congrats again.</td></tr>
+          <tr><td>欧美客户（关系好时）</td><td>Love you ❤️（简单有力，效果惊人）</td></tr>
+          <tr><td>用手机发送时</td><td>Typed with big thumbs on a small phone.</td></tr>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FOLLOWUP ===== -->
+    <div class="page" id="page-followup">
+      <div class="article-header">
+        <div class="article-tag">🔄 模块五</div>
+        <div class="article-title">客户跟进策略</div>
+        <div class="article-meta">让每一次跟进都有价值，而不只是"催单"</div>
+      </div>
+
+      <div class="content-section">
+        <h2>核心原则：价值优先</h2>
+        <p>跟进客户不是简单地发"Hi, any update?"，而是<strong>每次联系都要给客户带来值得看的内容</strong>。如果你的跟进没有提供任何新信息或价值，客户会逐渐忽略你。</p>
+        <div class="tip-box">
+          <p><strong>黄金法则：</strong>用7分钟准备，3分钟跟进。每次跟进前，先想清楚这次给客户带来了什么——市场动态、新产品信息、解决方案，还是其他有价值的内容？</p>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>哪些内容对客户有价值？</h2>
+        <div class="info-grid">
+          <div class="info-item"><div class="info-item-title">市场动态</div><div class="info-item-body">原材料价格变动、行业新趋势</div></div>
+          <div class="info-item"><div class="info-item-title">清关信息</div><div class="info-item-body">目标市场海关政策变化</div></div>
+          <div class="info-item"><div class="info-item-title">节省成本方案</div><div class="info-item-body">新工艺或替代材料可降低采购成本</div></div>
+          <div class="info-item"><div class="info-item-title">新品推荐</div><div class="info-item-body">市场热销新型号，第一时间通知</div></div>
+          <div class="info-item"><div class="info-item-title">销售建议</div><div class="info-item-body">如何让客户的产品卖得更好更快</div></div>
+          <div class="info-item"><div class="info-item-title">定制化方案</div><div class="info-item-body">品牌定制、包装设计提升</div></div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>跟进节奏：前紧后稳</h2>
+        <div class="check-list">
+          <li>初次接触后的前几天：高频跟进，快速收集信息，建立印象</li>
+          <li>确认暂时无合作意向后：固定节奏跟进，如每周一次</li>
+          <li>3封邮件无回复：必须打电话，否则之前努力全部白费</li>
+          <li>晚上9-12点：与欧美客户沟通订单的黄金时段</li>
+          <li>多渠道并行：邮件+即时通讯+电话，判断客户最活跃的渠道</li>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>11种跟进思路</h2>
+        <ul class="step-list">
+          <li><div class="step-num">1</div><div class="step-content"><div class="step-title">事件切入</div><div class="step-desc">关注客户所在国的政治、经济、文化事件，以新闻事件为话题建立互动</div></div></li>
+          <li><div class="step-num">2</div><div class="step-content"><div class="step-title">免费赠予</div><div class="step-desc">免费提供样品、市场报告或实用工具，让客户感受到我们真心帮助</div></div></li>
+          <li><div class="step-num">3</div><div class="step-content"><div class="step-title">合作愿景</div><div class="step-desc">构想具体的合作场景，说明如果合作，客户能获得哪些具体好处</div></div></li>
+          <li><div class="step-num">4</div><div class="step-content"><div class="step-title">顾问角色</div><div class="step-desc">对客户的产品、网站、公司提供专业评价和改进建议</div></div></li>
+          <li><div class="step-num">5</div><div class="step-content"><div class="step-title">直接推品</div><div class="step-desc">简要给出推荐理由，产品信息提供到位，分2-4封邮件有节奏发送</div></div></li>
+          <li><div class="step-num">6</div><div class="step-content"><div class="step-title">节日祝福</div><div class="step-desc">记住客户和家庭成员的生日、节假日，及时发送祝福</div></div></li>
+          <li><div class="step-num">7</div><div class="step-content"><div class="step-title">出差通知</div><div class="step-desc">告知客户自己即将出差，有重要事宜需要直接联系，借此换取电话或WhatsApp</div></div></li>
+          <li><div class="step-num">8</div><div class="step-content"><div class="step-title">产品测试邀请</div><div class="step-desc">告知新品上线，邀请客户成为第一批免费测试者，提供免费样品</div></div></li>
+          <li><div class="step-num">9</div><div class="step-content"><div class="step-title">价格更新</div><div class="step-desc">定期更新产品报价，让客户感受到我们在持续关注市场</div></div></li>
+          <li><div class="step-num">10</div><div class="step-content"><div class="step-title">预告电话</div><div class="step-desc">长时间无回复时，直接告知客户某个具体时间会致电</div></div></li>
+          <li><div class="step-num">11</div><div class="step-content"><div class="step-title">其他价值提供</div><div class="step-desc">一切你认为对客户有价值的内容，注意尊重当地礼仪和文化禁忌</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ===== NEGOTIATE ===== -->
+    <div class="page" id="page-negotiate">
+      <div class="article-header">
+        <div class="article-tag">💬 模块六</div>
+        <div class="article-title">谈判与议价</div>
+        <div class="article-meta">价格谈判的本质是价值谈判</div>
+      </div>
+
+      <div class="content-section">
+        <h2>核心认知：谈价格，实质是谈价值</h2>
+        <p>很多销售员陷入价格拉锯战，是因为没有把对话从"价格比较"转移到"价值比较"。真正的谈判高手能让客户看到：用我们的产品，能赚更多钱或省更多钱。</p>
+        <div class="quote-block">
+          <p>价格谈判只是表象，背后真正要谈的是：我们的产品如何帮助客户降低运营成本、获取更多市场份额、以及加快投资回报。</p>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>谈判前的三项准备</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-item-title">📊 产品核心数据</div>
+            <div class="info-item-body">价格、交期、起订量、型号、颜色、参数、规格、质量水平、认证情况</div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-title">👂 客户关注点</div>
+            <div class="info-item-body">质量、价格空间、交货期、付款方式、包装、定制化、品牌支持</div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-title">🎯 我方底线</div>
+            <div class="info-item-body">能够接受的最低价格，以及其他维度的让步空间（交期、付款条件等）</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>价格谈判的核心技巧</h2>
+        <ul class="step-list">
+          <li><div class="step-num">①</div><div class="step-content"><div class="step-title">不要过早亮底牌</div><div class="step-desc">保持适当神秘感，先了解客户真实期望价格，再做出让步决策</div></div></li>
+          <li><div class="step-num">②</div><div class="step-content"><div class="step-title">让步要有节奏</div><div class="step-desc">降价次数不超过3次，每次降幅越来越小，最终坚守底线。轻易大幅降价会让客户认为报价水分大，反而损害信任</div></div></li>
+          <li><div class="step-num">③</div><div class="step-content"><div class="step-title">让对方感觉"赢了"</div><div class="step-desc">谈判的艺术在于让对方通过努力把价格谈下来，而不是你主动送出去。客户相信这是你能承受的最低价，才真正放心</div></div></li>
+          <li><div class="step-num">④</div><div class="step-content"><div class="step-title">降价要换回其他条件</div><div class="step-desc">接受降价时，同步要求客户增加订量、提前付款、更快打款、接受抽检等，保持谈判平衡</div></div></li>
+          <li><div class="step-num">⑤</div><div class="step-content"><div class="step-title">用数据说话</div><div class="step-desc">清楚了解产品成本构成，才能在压价时有底气拒绝，并能用具体数字说服客户</div></div></li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>客户说"你家最贵"怎么回应？</h2>
+        <div class="tip-box">
+          <p><strong>先发制人话术：</strong>"感谢您抽出时间。我知道您很忙，所以我先直说：是的，我们的产品在市场上价格偏高，甚至比竞争对手贵15%。但全球每天都有数十个像贵司这样规模的客户，在了解价差的情况下依然选择我们——您想知道原因吗？"</p>
+        </div>
+        <p>当客户说"想"，接着说：这正是接下来我要解释的。我们的产品能为您带来……（具体价值点），这是其他低价产品无法实现的。</p>
+      </div>
+
+      <div class="content-section">
+        <h2>影响客户行为的四大杠杆</h2>
+        <div class="two-col">
+          <div class="col-box">
+            <div class="col-box-title">🔄 互惠原则</div>
+            <ul>
+              <li>情绪互惠：你让对方感觉好，对方也会回馈</li>
+              <li>物质互惠：赠品、折扣引发回报义务</li>
+              <li>智识互惠：提供有价值的洞察和方案</li>
+            </ul>
+          </div>
+          <div class="col-box">
+            <div class="col-box-title">👥 社会认同</div>
+            <ul>
+              <li>展示知名客户合作案例</li>
+              <li>提供客户推荐信和评价</li>
+              <li>展示合作客户的品牌清单</li>
+            </ul>
+          </div>
+          <div class="col-box">
+            <div class="col-box-title">🏛️ 权威建立</div>
+            <ul>
+              <li>强调专业年限和行业经验</li>
+              <li>展示认证、测试报告</li>
+              <li>主动分享行业专业知识</li>
+            </ul>
+          </div>
+          <div class="col-box">
+            <div class="col-box-title">⏰ 稀缺性</div>
+            <ul>
+              <li>限量库存，过期涨价</li>
+              <li>当前特价仅限本批次</li>
+              <li>竞争对手已在下单</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CLOSE ===== -->
+    <div class="page" id="page-close">
+      <div class="article-header">
+        <div class="article-tag">🏆 模块七</div>
+        <div class="article-title">征服异议与成交</div>
+        <div class="article-meta">勇敢提问，主动推进，永不放弃</div>
+      </div>
+
+      <div class="content-section">
+        <h2>处理客户异议的六个维度</h2>
+        <div class="info-grid">
+          <div class="info-item"><div class="info-item-title">产品本身</div><div class="info-item-body">质量、功能、规格不符预期</div></div>
+          <div class="info-item"><div class="info-item-title">价格竞争</div><div class="info-item-body">与竞争对手报价有差距</div></div>
+          <div class="info-item"><div class="info-item-title">竞品样品</div><div class="info-item-body">竞争对手已提供样品在评估中</div></div>
+          <div class="info-item"><div class="info-item-title">客户特殊需求</div><div class="info-item-body">定制化、认证、包装等特殊要求</div></div>
+          <div class="info-item"><div class="info-item-title">政治经济因素</div><div class="info-item-body">客户市场受政策或经济影响</div></div>
+          <div class="info-item"><div class="info-item-title">市场变化</div><div class="info-item-body">客户所在市场发生了重大变化</div></div>
+        </div>
+        <div class="tip-box">
+          <p><strong>面对"有固定供应商"的异议：</strong>先问"您最喜欢现有供应商的哪一点？"听完后，承认更换供应商的成本和难度，然后强调：我们不是要取代他们，而是希望成为您的备选方案，降低您的供应链风险。</p>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>制造紧迫性的9种方法</h2>
+        <div class="check-list">
+          <li>限时优惠：折扣或赠品仅在特定时间段内有效</li>
+          <li>稀缺性：当前库存有限，过了这批价格将上涨</li>
+          <li>原材料涨价：已收到通知，下周价格上调X%</li>
+          <li>交期分析：提前下单能赶上重要销售季节</li>
+          <li>节日/旺季压力：帮客户分析产品对其销售旺季的重要性</li>
+          <li>竞争对手已行动：同类竞争对手已下单，先发优势明显</li>
+          <li>截止日期：X天内不确认，将转供其他客户</li>
+          <li>特殊产品时效：该产品质量有效期仅X个月</li>
+          <li>整合分析：结合客户具体情况，给出尽快决策的综合理由</li>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>六种成交话术</h2>
+        <ul class="step-list">
+          <li>
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <div class="step-title">邀请成交法</div>
+              <div class="step-desc">"到目前为止，我介绍的内容您都清楚了吗？" → 客户说"明白了" → "那为什么不现在安排一个订单呢？"</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <div class="step-title">优先权成交法（二选一）</div>
+              <div class="step-desc">给出两个选项让客户选择，而不是"要还是不要"。例如："您更倾向于苹果型号还是三星型号？"</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <div class="step-title">假设成交法</div>
+              <div class="step-desc">假装客户已经同意购买，自信地推进下一步流程。"那好，下一步我们需要……" 让客户跟着流程走。</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">4</div>
+            <div class="step-content">
+              <div class="step-title">权威成交法</div>
+              <div class="step-desc">"我已经按讨论的内容准备好了发票，如果您对内容没有异议，批准后我们就可以开始安排生产了。"</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">5</div>
+            <div class="step-content">
+              <div class="step-title">次级成交法</div>
+              <div class="step-desc">聚焦产品细节而非"买不买"。"如果您今天确认订单，是要绿色的还是红色的？"接受细节等于接受了订单。</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">6</div>
+            <div class="step-content">
+              <div class="step-title">异议成交法</div>
+              <div class="step-desc">无论客户提出什么异议，都回答："如果我们能解决这个问题，您会下单吗？" 反复锁定成交条件。</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>客户说"让我考虑考虑"怎么应对？</h2>
+        <div class="tactics-grid">
+          <div class="tactic-card">
+            <div class="tactic-label">步骤一</div>
+            <div class="tactic-text">"完全没问题，您需要考虑。我能问一下，是什么方面还需要考虑？是价格吗？"</div>
+          </div>
+          <div class="tactic-card">
+            <div class="tactic-label">步骤二</div>
+            <div class="tactic-text">如果是价格："您的意思是……？" "具体差距有多远？" "价格是您唯一的顾虑吗？"</div>
+          </div>
+          <div class="tactic-card">
+            <div class="tactic-label">步骤三</div>
+            <div class="tactic-text">锁定条件："如果我们能满足这个条件，您准备好和我们合作了吗？"</div>
+          </div>
+          <div class="tactic-card">
+            <div class="tactic-label">关键信念</div>
+            <div class="tactic-text">永远不要放弃。勇敢询问，勇敢坚持，勤奋努力拿到每一个该拿到的订单。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ORDER ===== -->
+    <div class="page" id="page-order">
+      <div class="article-header">
+        <div class="article-tag">📋 模块八</div>
+        <div class="article-title">生产备货管理</div>
+        <div class="article-meta">细节决定成败——每一个环节都不能出错</div>
+      </div>
+
+      <div class="content-section">
+        <h2>下单前的核查清单</h2>
+        <div class="check-list">
+          <li>推荐产品时已考虑交期，避免选择交期过长的产品</li>
+          <li>工厂报交期需加2-3天缓冲（工厂交期通常偏乐观）</li>
+          <li>重要事项已标注颜色，客户已书面确认</li>
+          <li>型号、价格、起订量、重量、尺寸、总数等关键数据已核对无误</li>
+          <li>需要认证文件的产品，已取得相关证件并经货代确认可出货</li>
+          <li>充电器类产品已确认插头类型和使用电压</li>
+          <li>大订单已签合同，明确出错处理方式和赔偿责任</li>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>下单操作规范</h2>
+        <div class="warning-box">
+          <p>⚠️ <strong>严格禁止：</strong>产品或包装上出现任何未经授权的品牌信息（Samsung、iPhone等品牌文字、Logo、图案）</p>
+        </div>
+        <div class="check-list">
+          <li>内置电池产品，供应商必须提前告知</li>
+          <li>外形相同但型号功能不同的产品，供应商必须明确区分说明</li>
+          <li>移动电源/背夹电池，必须按空运/海运规范装箱贴标</li>
+          <li>手机壳型号版本和孔位必须精确无误，出错由工厂承担赔偿</li>
+          <li>所有订单信息须保密，工厂不得向任何同行透露</li>
+          <li>Logo印刷细节必须落实到位，小Logo出错是大问题</li>
+          <li>大货质量必须与确认样品一致，任何改动须先与客户沟通</li>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>出货前检查流程</h2>
+        <ul class="step-list">
+          <li><div class="step-num">1</div><div class="step-content"><div class="step-title">提供出货前产品图片</div><div class="step-desc">货物直发货代前，供应商必须提供清晰产品图片，确认款式型号无误</div></div></li>
+          <li><div class="step-num">2</div><div class="step-content"><div class="step-title">开箱质检</div><div class="step-desc">出货前每箱必须开箱检查产品质量和打包情况，使用足够厚度的硬箱</div></div></li>
+          <li><div class="step-num">3</div><div class="step-content"><div class="step-title">提供完整装箱单</div><div class="step-desc">Excel格式，包含箱号、产品名称、型号、颜色、数量、重量（KG）、体积（L×W×H cm）</div></div></li>
+          <li><div class="step-num">4</div><div class="step-content"><div class="step-title">付款确认</div><div class="step-desc">支付尾款前，确认以上所有环节均已落实；支付比例通常为30%定金+70%尾款</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ===== LOGISTICS ===== -->
+    <div class="page" id="page-logistics">
+      <div class="article-header">
+        <div class="article-tag">🚢 模块九</div>
+        <div class="article-title">物流与清关</div>
+        <div class="article-meta">稳妥出货，全程跟踪，提前准备</div>
+      </div>
+
+      <div class="content-section">
+        <h2>出货前与货代沟通</h2>
+        <p>发货前，充分与货代沟通，推荐最优走货方式，为客户节省时间和成本。同时，告知客户可能出现的物流风险，由客户自行决定承担方式。</p>
+      </div>
+
+      <div class="content-section">
+        <h2>清关文件准备</h2>
+        <div class="check-list">
+          <li>提前准备完整清关文件：发票、提单、装箱单及其他必要文件</li>
+          <li>清关文件<strong>不得</strong>与样品一起寄送，必须单独快递</li>
+          <li>发票价格必须经客户自行确认</li>
+          <li>收件地址须由客户仔细核对</li>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>全程物流跟踪节点</h2>
+        <ul class="step-list">
+          <li><div class="step-num">①</div><div class="step-content"><div class="step-title">货物离开中国</div><div class="step-desc">主动告知客户货物已出发，提供跟踪号</div></div></li>
+          <li><div class="step-num">②</div><div class="step-content"><div class="step-title">货物到达目的国（美国/欧洲）</div><div class="step-desc">再次通知客户，提醒关注后续动态</div></div></li>
+          <li><div class="step-num">③</div><div class="step-content"><div class="step-title">货物到达客户所在城市</div><div class="step-desc">通知客户准备清关，协助客户做好接收准备</div></div></li>
+          <li><div class="step-num">④</div><div class="step-content"><div class="step-title">客户收货后</div><div class="step-desc">主动询问客户是否有损坏或质量问题，第一时间处理任何售后问题</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ===== AFTERSALE ===== -->
+    <div class="page" id="page-aftersale">
+      <div class="article-header">
+        <div class="article-tag">⭐ 模块十</div>
+        <div class="article-title">售后、复购与转介绍</div>
+        <div class="article-meta">最好的新客户，来自老客户的推荐</div>
+      </div>
+
+      <div class="content-section">
+        <h2>售后服务的核心原则</h2>
+        <p>企业的目的是<strong>创造并留住客户</strong>。与开发新客户相比，老客户转介绍新客户所需的时间和精力，仅为开发新客户的1/15。</p>
+        <div class="tip-box">
+          <p><strong>关键行为：</strong>客户收货1-2周后，主动询问销售情况。问客户："您对我的服务最满意哪方面？还有哪里可以改进？如果您有朋友也在做类似业务，您愿意把我们推荐给他们吗？"</p>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>推动复购的最佳时机</h2>
+        <p>销售新产品的最佳时机是<strong>客户当前订单还在备货期间</strong>。这时客户对你的信任度最高，对你推荐的内容最重视——主动追加销售其他产品的成功率远高于平时。</p>
+      </div>
+
+      <div class="content-section">
+        <h2>获取客户推荐的行动</h2>
+        <ul class="step-list">
+          <li><div class="step-num">1</div><div class="step-content"><div class="step-title">定期回访</div><div class="step-desc">每次回访都问："今天有什么方式可以帮到您？对过去的产品有任何问题吗？"</div></div></li>
+          <li><div class="step-num">2</div><div class="step-content"><div class="step-title">发感谢信</div><div class="step-desc">每次深度沟通或完成订单后，发一封简短的感谢信，并对合作做一个简单总结</div></div></li>
+          <li><div class="step-num">3</div><div class="step-content"><div class="step-title">直接要求推荐</div><div class="step-desc">"基于我们的合作经历，您会把我们推荐给您认识的人吗？您还知道有哪些朋友可能会对我们的产品感兴趣？"</div></div></li>
+          <li><div class="step-num">4</div><div class="step-content"><div class="step-title">收集推荐书</div><div class="step-desc">请满意的客户写推荐信或录制视频见证，用于开发新客户时建立信任</div></div></li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>综合性超越期待的服务</h2>
+        <p>把自己定位为客户的"商业顾问"，不只是供应商：</p>
+        <div class="info-grid">
+          <div class="info-item"><div class="info-item-title">提供人脉资源</div><div class="info-item-body">介绍对客户有价值的人脉关系</div></div>
+          <div class="info-item"><div class="info-item-title">市场情报</div><div class="info-item-body">分享行业动态和竞争市场信息</div></div>
+          <div class="info-item"><div class="info-item-title">免费包装设计</div><div class="info-item-body">为客户提供产品和包装的专业设计</div></div>
+          <div class="info-item"><div class="info-item-title">新技术分享</div><div class="info-item-body">主动分享新生产工艺和技术进展</div></div>
+          <div class="info-item"><div class="info-item-title">质量控制方法</div><div class="info-item-body">协助客户建立产品质量把关体系</div></div>
+          <div class="info-item"><div class="info-item-title">物流统筹安排</div><div class="info-item-body">替客户选择最优运输方案，节省成本</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PROFESSIONAL ===== -->
+    <div class="page" id="page-professional">
+      <div class="article-header">
+        <div class="article-tag">🌟 模块十一</div>
+        <div class="article-title">职业素养与工作效率</div>
+        <div class="article-meta">细节决定专业，效率决定竞争力</div>
+      </div>
+
+      <div class="content-section">
+        <h2>回复速度：第一时间是关键</h2>
+        <p>客户的消息要尽可能即时回复。若确实忙碌，至少先回复一句："您好，我看到了您的消息，将在[具体时间]详细回复您。"给客户一个明确预期，比没有回复要好得多。</p>
+      </div>
+
+      <div class="content-section">
+        <h2>做好细节就是专业</h2>
+        <div class="check-list">
+          <li>产品推广文件的字体、颜色、排版和打印设置都需要精心处理</li>
+          <li>报价单和形式发票（PI）格式专业、图片清晰、数据准确</li>
+          <li>邮件中的标点符号、错别字等细节要仔细检查</li>
+          <li>使用专业词汇，让客户感受到你的专业性和可靠性</li>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>GOSPA战略：做好开发客户规划</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-item-title">G · 长期目标</div>
+            <div class="info-item-body">未来一年要实现多少业绩？具体数字</div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-title">O · 短期目标</div>
+            <div class="info-item-body">每月/每周需要完成哪些具体工作？</div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-title">S · 策略</div>
+            <div class="info-item-body">增加交易次数、增加单次金额、增加交易频率</div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-title">P · 计划</div>
+            <div class="info-item-body">执行策略的具体行动清单和时间安排</div>
+          </div>
+          <div class="info-item">
+            <div class="info-item-title">A · 行动</div>
+            <div class="info-item-body">立即执行，今天就开始做</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>时间管理：80/20原则</h2>
+        <div class="check-list">
+          <li>将大部分时间投入到最高价值的事情：寻找新客户、与客户深度沟通、解决客户需求</li>
+          <li>80%精力聚焦在20%的高价值客户身上</li>
+          <li>用碎片时间跟进那些犹豫不决的客户</li>
+          <li>开发新客户永远是重要任务，不要把所有时间都花在维护老客户上</li>
+          <li>建立清单管理：年度→季度→月度→周→日，层层分解目标</li>
+        </div>
+        <div class="tip-box">
+          <p><strong>比同行多做一点：</strong>凡事多想一步——我如何可以做得更好？让客户感受到我们的产品更优、服务更好。卓越的销售员能发现别人看不见的产品优点，真诚地为客户着想。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MINDSET ===== -->
+    <div class="page" id="page-mindset">
+      <div class="article-header">
+        <div class="article-tag">💎 模块十二</div>
+        <div class="article-title">顶级销售的信念与秘诀</div>
+        <div class="article-meta">心态是成败的根源</div>
+      </div>
+
+      <div class="content-section">
+        <h2>顶级销售的核心信念</h2>
+        <div class="tactics-grid">
+          <div class="tactic-card">
+            <div class="tactic-label">关于逆境</div>
+            <div class="tactic-text">你所处的环境决定不了你能走多远，它只决定了你从哪里出发。能够生存下来的，不是最强壮的，而是最能适应变化的。</div>
+          </div>
+          <div class="tactic-card">
+            <div class="tactic-label">关于拒绝</div>
+            <div class="tactic-text">每个销售员刚开始都是一块未经雕琢的石头，客户的每一次拒绝都是一次雕刻。能坚持下来的人，最终会成为一件坚固的艺术品。</div>
+          </div>
+          <div class="tactic-card">
+            <div class="tactic-label">关于努力</div>
+            <div class="tactic-text">你最有价值的资产是你赚钱的能力；你最宝贵的资源是你的时间。不断挖掘潜在客户——你开发的每一个客户，都在向你"付费"，只是时机未到。</div>
+          </div>
+          <div class="tactic-card">
+            <div class="tactic-label">关于倾听</div>
+            <div class="tactic-text">提出技巧性问题，然后仔细倾听客户回答的能力，是成为顶级销售的真正标志。大多数销售失败，不是因为不会说，而是因为不会听。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2>成功销售的七大秘诀</h2>
+        <ul class="step-list">
+          <li>
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <div class="step-title">认真对待工作</div>
+              <div class="step-desc">下定决心进入这个行业的前10%。这是一个选择，不是靠运气——而是靠日复一日的刻意练习。</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <div class="step-title">找到并突破限制性技能</div>
+              <div class="step-desc">诚实地找出阻碍你销售成功的那一个核心短板，然后找资料、买课程、请教他人，全力提升。</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <div class="step-title">谨慎选择你的圈子</div>
+              <div class="step-desc">你的成就在很大程度上被你周围的人影响。远离消极、抱怨、毫无进取心的人；亲近积极、上进、能给你带来启发的人。</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">4</div>
+            <div class="step-content">
+              <div class="step-title">保持身体和精神的健康</div>
+              <div class="step-desc">照顾好自己的身体，保持规律的作息和运动习惯。持续稳定的状态远比偶尔爆发有效。</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">5</div>
+            <div class="step-content">
+              <div class="step-title">练习创造性想象</div>
+              <div class="step-desc">把自己想象成一个冷静、自信、专业、成功的顶级销售员。你心里的自我形象，会决定你实际的行为模式。</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">6</div>
+            <div class="step-content">
+              <div class="step-title">积极的自我对话</div>
+              <div class="step-desc">每天告诉自己："我喜欢我自己！我是最好的！我爱我的工作！我可以做到！每一天，我都在进步！"语言塑造信念。</div>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">7</div>
+            <div class="step-content">
+              <div class="step-title">立即行动，不断前进</div>
+              <div class="step-desc">相信行动的力量。不要等完美的时机——现在就做！每一个小行动积累起来，就是巨大的改变。</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="quote-block">
+        <p>顶级的销售员，是客户最信任的朋友、最依赖的顾问、最尊重的老师。建立这样的关系，不是靠技巧，而是靠真心。</p>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<button class="mobile-toggle" id="mobileToggle" onclick="toggleSidebar()">☰</button>
+
+<script>
+// Page navigation
+function showPage(pageId, navEl) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  // Show target page
+  const target = document.getElementById('page-' + pageId);
+  if (target) target.classList.add('active');
+
+  // Update nav
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (navEl) navEl.classList.add('active');
+
+  // Update breadcrumb
+  const titles = {
+    home: '首页',
+    product: '掌握产品知识',
+    prospect: '客户开发理念',
+    pipeline: '销售漏斗管理',
+    email: '开发信写作',
+    followup: '客户跟进策略',
+    negotiate: '谈判与议价',
+    close: '征服异议与成交',
+    order: '生产备货管理',
+    logistics: '物流与清关',
+    aftersale: '售后与复购',
+    professional: '职业素养与效率',
+    mindset: '顶级销售信念'
+  };
+  document.getElementById('currentPageTitle').textContent = titles[pageId] || pageId;
+
+  // Scroll to top
+  document.querySelector('.main').scrollTop = 0;
+  window.scrollTo(0, 0);
+
+  // Close sidebar on mobile
+  if (window.innerWidth <= 768) {
+    document.getElementById('sidebar').classList.remove('open');
+  }
+}
+
+// Search
+const searchData = [
+  { title: '掌握产品知识', section: '产品与客户', page: 'product', keywords: '产品 知识 卖点 学习 材料 生产 认证' },
+  { title: '客户开发理念', section: '产品与客户', page: 'prospect', keywords: '客户 开发 信息 大客户 聊天 技巧 拒绝' },
+  { title: '销售漏斗管理', section: '产品与客户', page: 'pipeline', keywords: '漏斗 销售 障碍 信任 成交 定律' },
+  { title: '开发信写作', section: '沟通与跟进', page: 'email', keywords: '开发信 邮件 标题 结尾 回复率 群发' },
+  { title: '客户跟进策略', section: '沟通与跟进', page: 'followup', keywords: '跟进 节奏 思路 价值 沟通 联系' },
+  { title: '谈判与议价', section: '谈判与成交', page: 'negotiate', keywords: '谈判 价格 议价 降价 竞争 底线' },
+  { title: '征服异议与成交', section: '谈判与成交', page: 'close', keywords: '成交 异议 紧迫性 拒绝 话术 考虑' },
+  { title: '生产备货管理', section: '订单与物流', page: 'order', keywords: '下单 备货 质检 生产 交期 出货' },
+  { title: '物流与清关', section: '订单与物流', page: 'logistics', keywords: '物流 清关 货代 海运 空运 跟踪' },
+  { title: '售后与复购', section: '订单与物流', page: 'aftersale', keywords: '售后 复购 推荐 回访 感谢 转介绍' },
+  { title: '职业素养与效率', section: '职业成长', page: 'professional', keywords: '职业 专业 时间 管理 效率 GOSPA' },
+  { title: '顶级销售信念', section: '职业成长', page: 'mindset', keywords: '信念 心态 成功 秘诀 坚持 成长' }
+];
+
+function handleSearch(val) {
+  const resultsEl = document.getElementById('searchResults');
+  const navEl = document.getElementById('sidebarNav');
+
+  if (!val.trim()) {
+    resultsEl.style.display = 'none';
+    navEl.style.display = 'block';
+    return;
+  }
+
+  const q = val.toLowerCase();
+  const results = searchData.filter(item =>
+    item.title.includes(val) ||
+    item.keywords.includes(val) ||
+    item.section.includes(val)
+  );
+
+  navEl.style.display = 'none';
+  resultsEl.style.display = 'block';
+  resultsEl.innerHTML = results.length
+    ? results.map(r => `
+        <div class="search-result-item" onclick="showPage('${r.page}', null); clearSearch()">
+          <div class="result-title">${r.title}</div>
+          <div class="result-section">${r.section}</div>
+        </div>
+      `).join('')
+    : '<div style="padding:12px 20px;color:rgba(255,255,255,0.4);font-size:12px;">没有找到相关内容</div>';
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchResults').style.display = 'none';
+  document.getElementById('sidebarNav').style.display = 'block';
+}
+
+// Mobile sidebar
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// Reading progress
+window.addEventListener('scroll', () => {
+  const docEl = document.documentElement;
+  const scrollTop = docEl.scrollTop || document.body.scrollTop;
+  const scrollHeight = docEl.scrollHeight - docEl.clientHeight;
+  const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+  document.getElementById('progressBar').style.width = progress + '%';
+});
+
+// Module card onclick helpers already bound above
+// Initial active state already set in HTML
+</script>
+</body>
+</html>
