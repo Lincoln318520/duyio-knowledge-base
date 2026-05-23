@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>两天时间，我把巴菲特70年的股东信变成了知识图谱</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1208;
+    --paper: #f5f0e8;
+    --gold: #b8860b;
+    --gold-light: #d4a843;
+    --rust: #8b3a1a;
+    --cream: #ede8d8;
+    --muted: #7a6e5f;
+    --accent: #2c4a1e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 300;
+    line-height: 1.9;
+    overflow-x: hidden;
+  }
+
+  /* 纸张纹理背景 */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* 头部 */
+  header {
+    position: relative;
+    padding: 80px 40px 60px;
+    max-width: 860px;
+    margin: 0 auto;
+    border-bottom: 2px solid var(--gold);
+  }
+
+  .label {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 500;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gold-light);
+    opacity: 0.4;
+  }
+
+  h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 900;
+    line-height: 1.3;
+    letter-spacing: -0.5px;
+    margin-bottom: 24px;
+    color: var(--ink);
+  }
+
+  h1 span {
+    color: var(--gold);
+  }
+
+  .meta {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  /* 统计数字 */
+  .stats-bar {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 28px 40px;
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  .stat {
+    text-align: center;
+    padding: 12px 32px;
+    border-right: 1px solid rgba(245,240,232,0.15);
+    animation: fadeUp 0.6s ease both;
+  }
+  .stat:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold-light);
+    display: block;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: rgba(245,240,232,0.6);
+  }
+
+  /* 正文 */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 40px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  section {
+    padding: 56px 0;
+    border-bottom: 1px solid rgba(184,134,11,0.2);
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  section.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  h2 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  h2::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background: var(--gold);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  p {
+    font-size: 16px;
+    color: #2e2418;
+    margin-bottom: 18px;
+    max-width: 680px;
+  }
+
+  /* 引用块 */
+  blockquote {
+    border-left: 3px solid var(--gold);
+    padding: 20px 28px;
+    margin: 32px 0;
+    background: rgba(184,134,11,0.06);
+    border-radius: 0 8px 8px 0;
+  }
+  blockquote p {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.7;
+  }
+
+  /* 步骤列表 */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .step {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 20px 24px;
+    background: var(--cream);
+    border-radius: 8px;
+    border: 1px solid rgba(184,134,11,0.15);
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .step:hover {
+    border-color: var(--gold);
+    transform: translateX(4px);
+  }
+
+  .step-num {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1;
+    min-width: 32px;
+    padding-top: 2px;
+  }
+
+  .step-content strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .step-content span {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* 知识层级卡片 */
+  .layer-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-top: 8px;
+  }
+
+  .card {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 28px 24px;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s;
+  }
+  .card:hover { transform: translateY(-4px); }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--gold-light);
+  }
+
+  .card-tier {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .card-num {
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--gold-light);
+    font-family: 'Noto Serif SC', serif;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .card-desc {
+    font-size: 12px;
+    color: rgba(245,240,232,0.55);
+    line-height: 1.6;
+  }
+
+  /* 发现 */
+  .findings {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .finding {
+    padding: 24px 28px;
+    border: 1px solid rgba(184,134,11,0.2);
+    border-radius: 10px;
+    background: rgba(184,134,11,0.03);
+    position: relative;
+  }
+
+  .finding-tag {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    font-weight: 500;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .finding p {
+    font-size: 15px;
+    margin: 0;
+    color: #2e2418;
+  }
+
+  /* 结语 */
+  .ending {
+    text-align: center;
+    padding: 64px 20px;
+  }
+
+  .ending-quote {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(18px, 3vw, 26px);
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.6;
+    margin-bottom: 20px;
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .ending-sub {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 2px;
+  }
+
+  .gold-line {
+    width: 60px;
+    height: 2px;
+    background: var(--gold);
+    margin: 24px auto;
+  }
+
+  /* 链接 */
+  .site-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 32px;
+    padding: 14px 28px;
+    background: var(--ink);
+    color: var(--gold-light);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 2px;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+  .site-link:hover { background: var(--rust); }
+  .site-link::after { content: ' →'; }
+
+  /* 动画 */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .stat:nth-child(1) { animation-delay: 0.1s; }
+  .stat:nth-child(2) { animation-delay: 0.2s; }
+  .stat:nth-child(3) { animation-delay: 0.3s; }
+  .stat:nth-child(4) { animation-delay: 0.4s; }
+  .stat:nth-child(5) { animation-delay: 0.5s; }
+
+  @media (max-width: 600px) {
+    header, main { padding-left: 20px; padding-right: 20px; }
+    .stats-bar { padding: 20px; gap: 8px; }
+    .stat { padding: 10px 16px; }
+    .stat-num { font-size: 22px; }
+    .layer-cards { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="label">邦比读书 · 2026年4月</div>
+  <h1>两天时间，我把巴菲特<span>70年</span>的股东信变成了知识图谱</h1>
+  <div class="meta">
+    <span>作者：邦比快跑</span>
+    <span>工具：Claude Code</span>
+    <span>耗时：约2天</span>
+  </div>
+</header>
+
+<div class="stats-bar">
+  <div class="stat">
+    <span class="stat-num">81</span>
+    <span class="stat-label">封股东信</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">70</span>
+    <span class="stat-label">年跨度</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">188</span>
+    <span class="stat-label">个知识文件</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">4,194</span>
+    <span class="stat-label">条交叉链接</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">2天</span>
+    <span class="stat-label">完成全部</span>
+  </div>
+</div>
+
+<main>
+
+  <section>
+    <h2>一个疯狂的念头</h2>
+    <p>事情的起因很简单。有一天晚上，我在读巴菲特2024年的股东信，读到可口可乐从1994年给伯克希尔分红7500万美元，到2022年涨到了7.04亿美元——同一笔投资，分红翻了将近10倍。</p>
+    <p>我突然意识到：巴菲特从1956年写第一封合伙人信到现在，整整70年，几乎每年都在用最真诚的方式，向股东解释他是怎么思考的。</p>
+    <blockquote>
+      <p>70年。81封信。这可能是人类商业史上最长、最真诚、最有价值的一套投资教科书。但问题是——它太散了。</p>
+    </blockquote>
+    <p>于是我产生了一个疯狂的念头：能不能把这70年的所有信，全部翻译成中文，然后建成一个互相关联的知识图谱？</p>
+  </section>
+
+  <section>
+    <h2>我是这样干的：完整工作流</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <strong>收集原材料</strong>
+          <span>把巴菲特81封股东信的英文PDF全部找来，存入电脑文件夹。</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <strong>下达第一个指令</strong>
+          <span>打开终端，进入项目目录，告诉 Claude Code："从1957年第一封信开始，翻译成中文，提取核心概念，用Obsidian格式输出。"</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <strong>Claude Code 自动处理</strong>
+          <span>翻译全文、识别重要概念、标注可点击链接、生成统一格式。每封信约20-30分钟。</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <strong>5个Agent并行加速</strong>
+          <span>同时开5个 Claude Code 窗口，每个处理一批信件。81封信，一个下午全部完成。</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">05</div>
+        <div class="step-content">
+          <strong>建立三层知识结构</strong>
+          <span>整理35个投资概念卡片、61家公司档案、7位关键人物档案，建立4,194条交叉链接。</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">06</div>
+        <div class="step-content">
+          <strong>一句话发布成网站</strong>
+          <span>让 Claude Code "把这个知识库变成任何人都能用浏览器打开的网站"。全程没有打开过代码编辑器。</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>三层知识架构</h2>
+    <div class="layer-cards">
+      <div class="card">
+        <div class="card-tier">第一层</div>
+        <div class="card-title">投资概念</div>
+        <div class="card-num">35</div>
+        <div class="card-desc">护城河、复利、内在价值……每个概念追踪70年演变轨迹</div>
+      </div>
+      <div class="card">
+        <div class="card-tier">第二层</div>
+        <div class="card-title">公司档案</div>
+        <div class="card-num">61</div>
+        <div class="card-desc">可口可乐、GEICO、喜诗糖果……每家公司的完整投资故事</div>
+      </div>
+      <div class="card">
+        <div class="card-tier">第三层</div>
+        <div class="card-title">关键人物</div>
+        <div class="card-num">7</div>
+        <div class="card-desc">格雷厄姆、芒格……巴菲特70年间对他们评价的完整记录</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>三个让人惊讶的发现</h2>
+    <div class="findings">
+      <div class="finding">
+        <div class="finding-tag">发现一</div>
+        <p>巴菲特的"认错"频率远比你想象的高。他几乎每隔几年就用一整段详细解释自己犯了什么错，分析自己的思维过程哪里出了问题。2024年的信里，他还在反思几十年前的错误。</p>
+      </div>
+      <div class="finding">
+        <div class="finding-tag">发现二</div>
+        <p>"护城河"这个词，巴菲特到1995年才第一次正式使用。但这个概念的雏形——他叫"特许经营权"——在1970年代就反复出现了。概念没变，但表达方式进化了。</p>
+      </div>
+      <div class="finding">
+        <div class="finding-tag">发现三</div>
+        <p>芒格对巴菲特的影响，比大多数书里写的还要深。48封信的记录清晰显示，巴菲特的投资框架在1970年代中期发生了根本性转变，而这个转变的每一步，都有芒格的影子。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Claude Code 做了什么，没做什么</h2>
+    <p><strong>它做了：</strong>高质量翻译（保留巴菲特的语气和幽默）、跨文档概念识别与关联、188个文件的格式标准化、频次统计与图谱建设。</p>
+    <p><strong>它没做：</strong>选题判断是人做的。质量把关是人做的。那些让人惊讶的洞察，是人机协作共同发现的。</p>
+    <blockquote>
+      <p>AI是脚手架，但建筑是你的。</p>
+    </blockquote>
+  </section>
+
+  <div class="ending">
+    <div class="gold-line"></div>
+    <div class="ending-quote">
+      如果你也有一个"疯狂的念头"——某个领域的知识太散了，你想把它系统化——工具已经准备好了。缺的，只是你的那个念头。
+    </div>
+    <div class="ending-sub">作者：邦比快跑 · 邦比读书</div>
+    <br>
+    <a class="site-link" href="https://buffett-letters-eir.pages.dev/" target="_blank">访问巴菲特知识库</a>
+    <div class="gold-line"></div>
+  </div>
+
+</main>
+
+<script>
+  // 滚动动画
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('section').forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
